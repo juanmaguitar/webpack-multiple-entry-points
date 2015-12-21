@@ -41,20 +41,13 @@ You can also see the info that is printed to console. It shows among others:
 # pageA.js
 
 ``` javascript
-var common = require("./common");
-require(["./shared"], function(shared) {
-	shared("This is page A");
-});
+{{ src/js/pageA.js }}
 ```
 
 # pageB.js
 
 ``` javascript
-var common = require("./common");
-require.ensure(["./shared"], function(require) {
-	var shared = require("./shared");
-	shared("This is page B");
-});
+{{ src/js/pageB.js }}
 ```
 
 # webpack.config.js
