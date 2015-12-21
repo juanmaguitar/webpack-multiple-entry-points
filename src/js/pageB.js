@@ -3,7 +3,7 @@ var $ = require('../../node_modules/jquery');
 
 $("#click-me").click(function() {
 
-  // already loaded by pageA.js
+  // already loaded by pageA.js??
   require.ensure([ /* "./shared" */ ], function(require) {
     var shared = require("./shared");
     shared("You've just clicked!!");

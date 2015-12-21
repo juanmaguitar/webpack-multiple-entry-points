@@ -36,8 +36,11 @@ You can see the output files:
 * `pageA.bundle.js` contains:
   * the entry point `pageB.js`
   * it would contain any other module that is only used by `pageB`
-* `1.1.bundle` is an additional chunk which is used by both pages. It contains:
+* `1.1.bundle.js` is an additional chunk which is used by both pages. It contains:
   * module `shared.js`
+* `3.3.bundle.js` is an additional chunk which is used only used by `pageB`. It contains:
+  * module `on-demand-something.js`
+
 
 You can also see the info that is printed to console. It shows among others:
 
@@ -68,10 +71,21 @@ require(["./shared"], function(shared) {
 var common = require("./helpers");
 var $ = require('../../node_modules/jquery');
 
-require.ensure([ /* "./shared" */ ], function(require) {
-  var shared = require("./shared");
-  shared("This is page B");
-});
+$("#click-me").click(function() {
+
+  // already loaded by pageA.js??
+  require.ensure([ /* "./shared" */ ], function(require) {
+    var shared = require("./shared");
+    shared("You've just clicked!!");
+  });
+
+  // will be loaded on-demand (when clicking)
+  require.ensure([], function(require) {
+    var asyncLog = require("./on-demand-something");
+    asyncLog("Yes you did!!");
+  });
+})
+
 ```
 
 #### `package.json`
