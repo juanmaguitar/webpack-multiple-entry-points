@@ -2,6 +2,18 @@
 
 This repository is based in the [multiple-entry-points](https://github.com/webpack/webpack/tree/master/examples/multiple-entry-points) example available at https://github.com/webpack/webpack
 
+## Versions
+
+There are 2 available versions of this project
+
+With Commonjs modules
+
+`git checkout commonjs`
+
+With ES2015 modules `master`
+
+`git checkout commonjs`
+
 ## Install
 
 First of all you must install dependencies
