@@ -1,5 +1,7 @@
 # webpack-multiple-entry-points
 
+This repository is based in the [multiple-entry-points](https://github.com/webpack/webpack/tree/master/examples/multiple-entry-points) example available at https://github.com/webpack/webpack
+
 ## Install
 
 First of all you must install dependencies
