@@ -41,13 +41,13 @@ You can also see the info that is printed to console. It shows among others:
 # pageA.js
 
 ``` javascript
-{{ src/js/pageA.js }}
+{{src/js/pageA.js}}
 ```
 
 # pageB.js
 
 ``` javascript
-{{ src/js/pageB.js }}
+{{src/js/pageB.js}}
 ```
 
 # webpack.config.js
