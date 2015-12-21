@@ -395,33 +395,54 @@ webpackJsonp([3],{
 # Info
 
 ## Uncompressed
-
 ```
-$ webpack --progress --colors
+$ npm run webpack-dev-details
+
+> webpack-multiple-entry-points@1.0.0 webpack-dev-details /Users/juanma/www/webpack-multiple-entry-points
+> webpack --progress --colors --display-reasons --display-chunks --display-modules
+
 Hash: d88c9000534b85e4f169  
 Version: webpack 1.12.9
-Time: 513ms
+Time: 541ms
           Asset       Size  Chunks             Chunk Names
 pageA.bundle.js  399 bytes       0  [emitted]  pageA
   1.1.bundle.js  208 bytes       1  [emitted]  
 pageB.bundle.js  594 bytes       2  [emitted]  pageB
   3.3.bundle.js  163 bytes       3  [emitted]  
      commons.js     259 kB       4  [emitted]  commons.js
-   [0] ./src/js/pageA.js 153 bytes {0} [built]
-   [0] ./src/js/pageB.js 472 bytes {2} [built]
-   [1] ./src/js/helpers.js 43 bytes {4} [built]
-   [3] ./src/js/shared.js 102 bytes {1} [built]
-   [4] ./src/js/on-demand-something.js 81 bytes {3} [built]
-    + 1 hidden modules
+chunk    {0} pageA.bundle.js (pageA) 153 bytes {4} [rendered]
+    [0] ./src/js/pageA.js 153 bytes {0} [built]
+chunk    {1} 1.1.bundle.js 102 bytes {0} {2} [rendered]
+    [3] ./src/js/shared.js 102 bytes {1} [built]
+        amd require ./shared [0] ./src/js/pageA.js 4:0-6:2
+        cjs require ./shared [0] ./src/js/pageB.js 8:17-36
+chunk    {2} pageB.bundle.js (pageB) 472 bytes {4} [rendered]
+    [0] ./src/js/pageB.js 472 bytes {2} [built]
+chunk    {3} 3.3.bundle.js 81 bytes {2} [rendered]
+    [4] ./src/js/on-demand-something.js 81 bytes {3} [built]
+        cjs require ./on-demand-something [0] ./src/js/pageB.js 14:19-51
+chunk    {4} commons.js (commons.js) 248 kB [rendered]
+    [1] ./src/js/helpers.js 43 bytes {4} [built]
+        cjs require ./helpers [0] ./src/js/pageA.js 1:13-33
+        cjs require ./helpers [0] ./src/js/pageB.js 1:13-33
+        cjs require ./helpers [3] ./src/js/shared.js 2:13-33
+    [2] ./~/jquery/dist/jquery.js 248 kB {4} [built]
+        cjs require ../../node_modules/jquery [0] ./src/js/pageA.js 2:8-44
+        cjs require ../../node_modules/jquery [0] ./src/js/pageB.js 2:8-44
+
 ```
 
 ## Minimized (uglify-js, no zip)
 
 ```
-$ webpack --progress --colors -p
+$ npm run webpack-prod
+
+> webpack-multiple-entry-points@1.0.0 webpack-prod /Users/juanma/www/webpack-multiple-entry-points
+> webpack --progress --colors -p
+
 Hash: e79d6d9f70f38070f587  
 Version: webpack 1.12.9
-Time: 2902ms
+Time: 2991ms
           Asset       Size  Chunks             Chunk Names
   0.0.bundle.js   82 bytes       0  [emitted]  
      commons.js    86.2 kB       1  [emitted]  commons.js

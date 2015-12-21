@@ -5,9 +5,11 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "webpack": "webpack --progress --colors",
-    "build": "npm run webpack",
-    "start": "npm run webpack"
+    "webpack-dev": "webpack --progress --colors -d",
+    "webpack-prod": "webpack --progress --colors -p",
+    "webpack-dev-details": "webpack --progress --colors --display-reasons --display-chunks --display-modules",
+    "build": "npm run webpack-prod",
+    "start": "npm run webpack-dev"
   },
   "author": "",
   "license": "ISC",
