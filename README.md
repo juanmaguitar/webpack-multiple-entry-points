@@ -6,11 +6,11 @@ First of all you must install dependencies
 
 `npm install`
 
-and then create you can create the bundles by doing
+and then you can create the bundles by doing
 
 `npm start`
 
-Then you can open `pageA.html` or `pageAB.html` and check how the js files have been created properly and how webpack is also managing the async loading
+After this, you can open `pageA.html` or `pageAB.html` and check how the js files have been created properly and how webpack is also managing the 'on-demand' loading
 
 
 ## Description 
@@ -18,7 +18,7 @@ Then you can open `pageA.html` or `pageAB.html` and check how the js files have 
 This example shows:
 - how to use multiple entry points
 - how to create a common chunk w/ shared dependencies
-- how to do async loading and let webpack handle it
+- how to do 'on-demand' js loading and let webpack handle it
 
 In this example you have two (HTML) pages `pageA` and `pageAB`. You want to create individual bundles for each page. In addition to this you want to create a shared bundle that contains all modules used in both pages (assuming there are many/big modules in common). The pages also use Code Splitting to load a less used part of the features on demand (async loading).
 
@@ -395,7 +395,7 @@ webpackJsonp([3],{
 # Info
 
 ## Uncompressed
-```
+```ShellSession
 $ npm run webpack-dev-details
 
 > webpack-multiple-entry-points@1.0.0 webpack-dev-details /Users/juanma/www/webpack-multiple-entry-points
@@ -432,9 +432,11 @@ chunk    {4} commons.js (commons.js) 248 kB [rendered]
 
 ```
 
+Notice the `amd require` (AMD require) and `cjs require` (CommonJs require) indicating different types of modules co-existing
+
 ## Minimized (uglify-js, no zip)
 
-```
+```ShellSession
 $ npm run webpack-prod
 
 > webpack-multiple-entry-points@1.0.0 webpack-prod /Users/juanma/www/webpack-multiple-entry-points
@@ -469,3 +471,7 @@ WARNING in pageA.bundle.js from UglifyJs
 Side effects in initialization of unused variable common [./src/js/pageA.js:1,0]
 Side effects in initialization of unused variable $ [./src/js/pageA.js:2,0]
 ```
+
+## Resources 
+
+- http://www.slideshare.net/ittalk/webpack
