@@ -29,7 +29,7 @@ You can see the output files:
 * `commons.js` contains:
   * the module system
   * chunk loading logic
-  * module `helpers.js` and `jQuery` which is used in both pages
+  * module `helpers.js` and `jQuery` which is used in both entry pages
 * `pageA.bundle.js` contains:
   * the entry point `pageA.js`
   * it would contain any other module that is only used by `pageA`
@@ -52,7 +52,7 @@ You can also see the info that is printed to console. It shows among others:
 * the reasons why a chunk is created
   * see lines starting with `>`
 
-## `src` files
+## `src/js` files
 
 #### `pageA.js`
 
@@ -87,6 +87,8 @@ $("#click-me").click(function() {
 })
 
 ```
+
+## `config` files
 
 #### `package.json`
 
@@ -136,6 +138,8 @@ module.exports = {
 }
 ```
 
+## `html` files
+
 #### `pageA.html`
 
 ``` html
@@ -170,9 +174,9 @@ module.exports = {
 </html>
 ```
 
-## `dist` (generated) files
+## `dist/js` (generated) files
 
-#### `js/commons.js`
+#### `commons.js`
 
 ``` javascript
 /******/ (function(modules) { // webpackBootstrap
@@ -305,60 +309,83 @@ module.exports = {
 /******/ ]);
 ```
 
-# js/pageA.bundle.js
+#### `pageA.bundle.js`
 
 ``` javascript
 webpackJsonp([0],[
 /* 0 */
-/*!******************!*\
-  !*** ./pageA.js ***!
-  \******************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var common = __webpack_require__(/*! ./common */ 1);
-	__webpack_require__.e/* require */(1, function(__webpack_require__) { var __WEBPACK_AMD_REQUIRE_ARRAY__ = [__webpack_require__(/*! ./shared */ 2)]; (function(shared) {
-		shared("This is page A");
-	}.apply(null, __WEBPACK_AMD_REQUIRE_ARRAY__));});
+  var common = __webpack_require__(1);
+  var $ = __webpack_require__(2);
+
+  __webpack_require__.e/* require */(1, function(__webpack_require__) { var __WEBPACK_AMD_REQUIRE_ARRAY__ = [__webpack_require__(3)]; (function(shared) {
+    shared("This is page A");
+  }.apply(null, __WEBPACK_AMD_REQUIRE_ARRAY__));});
 
 /***/ }
 ]);
 ```
 
-# js/pageB.bundle.js
+#### `pageB.bundle.js`
 
 ``` javascript
 webpackJsonp([2],[
 /* 0 */
-/*!******************!*\
-  !*** ./pageB.js ***!
-  \******************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var common = __webpack_require__(/*! ./common */ 1);
-	__webpack_require__.e/* nsure */(1/* duplicate */, function(require) {
-		var shared = __webpack_require__(/*! ./shared */ 2);
-		shared("This is page B");
-	});
+  var common = __webpack_require__(1);
+  var $ = __webpack_require__(2);
+
+  $("#click-me").click(function() {
+
+    __webpack_require__.e/* nsure */(1/* duplicate */, function(require) {
+      var shared = __webpack_require__(3);
+      shared("You've just clicked!!");
+    });
+
+    __webpack_require__.e/* nsure */(3, function(require) {
+      var asyncLog = __webpack_require__(4);
+      asyncLog("Yes you did!!");
+    });
+  })
+
 
 /***/ }
 ]);
 ```
 
-# js/1.chunk.js
+#### `1.1.bundle.js`
 
 ``` javascript
 webpackJsonp([1],{
 
-/***/ 2:
-/*!*******************!*\
-  !*** ./shared.js ***!
-  \*******************/
+/***/ 3:
 /***/ function(module, exports, __webpack_require__) {
 
-	var common = __webpack_require__(/*! ./common */ 1);
-	module.exports = function(msg) {
-		console.log(msg);
-	};
+  /* shared */
+  var common = __webpack_require__(1);
+  module.exports = function(msg) {
+    console.log(msg);
+  };
+
+/***/ }
+
+});
+```
+
+#### `3.3.bundle.js`
+
+``` javascript
+webpackJsonp([3],{
+
+/***/ 4:
+/***/ function(module, exports) {
+
+  /* on-demand something */
+  module.exports = function(msg) {
+    console.log(msg);
+  };
 
 /***/ }
 
@@ -370,70 +397,54 @@ webpackJsonp([1],{
 ## Uncompressed
 
 ```
-Hash: 7061430bd2b90d83e1d2
-Version: webpack 1.9.10
-Time: 80ms
+$ webpack --progress --colors
+Hash: d88c9000534b85e4f169  
+Version: webpack 1.12.9
+Time: 513ms
           Asset       Size  Chunks             Chunk Names
-pageA.bundle.js  471 bytes       0  [emitted]  pageA
-     1.chunk.js  287 bytes       1  [emitted]  
-pageB.bundle.js  384 bytes       2  [emitted]  pageB
-     commons.js    3.69 kB       3  [emitted]  commons.js
-chunk    {0} pageA.bundle.js (pageA) 108 bytes {3} [rendered]
-    > pageA [0] ./pageA.js 
-    [0] ./pageA.js 108 bytes {0} [built]
-chunk    {1} 1.chunk.js 91 bytes {0} {2} [rendered]
-    > [0] ./pageA.js 2:0-4:2
-    > duplicate [0] ./pageB.js 2:0-5:2
-    [2] ./shared.js 91 bytes {1} [built]
-        amd require ./shared [0] ./pageA.js 2:0-4:2
-        require.ensure item ./shared [0] ./pageB.js 2:0-5:2
-        cjs require ./shared [0] ./pageB.js 3:14-33
-chunk    {2} pageB.bundle.js (pageB) 152 bytes {3} [rendered]
-    > pageB [0] ./pageB.js 
-    [0] ./pageB.js 152 bytes {2} [built]
-chunk    {3} commons.js (commons.js) 26 bytes [rendered]
-    [1] ./common.js 26 bytes {3} [built]
-        cjs require ./common [0] ./pageA.js 1:13-32
-        cjs require ./common [0] ./pageB.js 1:13-32
-        cjs require ./common [2] ./shared.js 1:13-32
+pageA.bundle.js  399 bytes       0  [emitted]  pageA
+  1.1.bundle.js  208 bytes       1  [emitted]  
+pageB.bundle.js  594 bytes       2  [emitted]  pageB
+  3.3.bundle.js  163 bytes       3  [emitted]  
+     commons.js     259 kB       4  [emitted]  commons.js
+   [0] ./src/js/pageA.js 153 bytes {0} [built]
+   [0] ./src/js/pageB.js 472 bytes {2} [built]
+   [1] ./src/js/helpers.js 43 bytes {4} [built]
+   [3] ./src/js/shared.js 102 bytes {1} [built]
+   [4] ./src/js/on-demand-something.js 81 bytes {3} [built]
+    + 1 hidden modules
 ```
 
 ## Minimized (uglify-js, no zip)
 
 ```
-Hash: 50883fab51924b1ba6bc
-Version: webpack 1.9.10
-Time: 254ms
+$ webpack --progress --colors -p
+Hash: e79d6d9f70f38070f587  
+Version: webpack 1.12.9
+Time: 2902ms
           Asset       Size  Chunks             Chunk Names
-     0.chunk.js   82 bytes       0  [emitted]  
-     commons.js  753 bytes       1  [emitted]  commons.js
-pageB.bundle.js   93 bytes       2  [emitted]  pageB
-pageA.bundle.js  124 bytes       3  [emitted]  pageA
-chunk    {0} 0.chunk.js 91 bytes {3} {2} [rendered]
-    > [0] ./pageA.js 2:0-4:2
-    > duplicate [0] ./pageB.js 2:0-5:2
-    [2] ./shared.js 91 bytes {0} [built]
-        amd require ./shared [0] ./pageA.js 2:0-4:2
-        require.ensure item ./shared [0] ./pageB.js 2:0-5:2
-        cjs require ./shared [0] ./pageB.js 3:14-33
-chunk    {1} commons.js (commons.js) 26 bytes [rendered]
-    [1] ./common.js 26 bytes {1} [built]
-        cjs require ./common [0] ./pageA.js 1:13-32
-        cjs require ./common [0] ./pageB.js 1:13-32
-        cjs require ./common [2] ./shared.js 1:13-32
-chunk    {2} pageB.bundle.js (pageB) 152 bytes {1} [rendered]
-    > pageB [0] ./pageB.js 
-    [0] ./pageB.js 152 bytes {2} [built]
-chunk    {3} pageA.bundle.js (pageA) 108 bytes {1} [rendered]
-    > pageA [0] ./pageA.js 
-    [0] ./pageA.js 108 bytes {3} [built]
+  0.0.bundle.js   82 bytes       0  [emitted]  
+     commons.js    86.2 kB       1  [emitted]  commons.js
+  2.2.bundle.js   75 bytes       2  [emitted]  
+pageB.bundle.js  197 bytes       3  [emitted]  pageB
+pageA.bundle.js  129 bytes       4  [emitted]  pageA
+   [0] ./src/js/pageA.js 153 bytes {4} [built]
+   [0] ./src/js/pageB.js 472 bytes {3} [built]
+   [1] ./src/js/helpers.js 43 bytes {1} [built]
+   [3] ./src/js/shared.js 102 bytes {0} [built]
+   [4] ./src/js/on-demand-something.js 81 bytes {2} [built]
+    + 1 hidden modules
 
-WARNING in 0.chunk.js from UglifyJs
-Side effects in initialization of unused variable common [./shared.js:1,0]
+WARNING in 0.0.bundle.js from UglifyJs
+Side effects in initialization of unused variable common [./src/js/shared.js:2,0]
+
+WARNING in commons.js from UglifyJs
+Condition always true [./~/jquery/dist/jquery.js:9170,0]
 
 WARNING in pageB.bundle.js from UglifyJs
-Side effects in initialization of unused variable common [./pageB.js:1,0]
+Side effects in initialization of unused variable common [./src/js/pageB.js:1,0]
 
 WARNING in pageA.bundle.js from UglifyJs
-Side effects in initialization of unused variable common [./pageA.js:1,0]
+Side effects in initialization of unused variable common [./src/js/pageA.js:1,0]
+Side effects in initialization of unused variable $ [./src/js/pageA.js:2,0]
 ```
