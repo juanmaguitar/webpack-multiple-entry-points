@@ -1,4 +1,4 @@
-# webpack-multiple-entry-points
+# webpack-multiple-entry-points (ES2015 modules)
 
 This repository is based in the [multiple-entry-points](https://github.com/webpack/webpack/tree/master/examples/multiple-entry-points) example available at https://github.com/webpack/webpack
 
@@ -59,35 +59,35 @@ You can also see the info that is printed to console. It shows among others:
 #### `pageA.js`
 
 ``` javascript
-var common = require("./helpers");
-var $ = require('../../node_modules/jquery');
+import common from "./helpers.js";
+import $ from '../../node_modules/jquery';
 
+// async loading. require only get objects (is also a good practice always return objects)
 require(["./shared"], function(shared) {
-  shared("This is page A");
+  shared.log(shared.common + "...you've just clicked!!");
 });
 ```
 
 #### `pageB.js`
 
 ``` javascript
-var common = require("./helpers");
-var $ = require('../../node_modules/jquery');
+import common from "./helpers.js";
+import $ from '../../node_modules/jquery';
 
 $("#click-me").click(function() {
 
   // already loaded by pageA.js??
-  require.ensure([ /* "./shared" */ ], function(require) {
-    var shared = require("./shared");
-    shared("You've just clicked!!");
+   require(["./shared"], function(shared) {
+    shared.log(shared.common + "...you've just clicked!!");
   });
 
   // will be loaded on-demand (when clicking)
-  require.ensure([], function(require) {
-    var asyncLog = require("./on-demand-something");
-    asyncLog("Yes you did!!");
+  require(["./on-demand-something"], function(onDemand) {
+    onDemand.log("Yes you did!!");
+    onDemand.log(common);
   });
-})
 
+})
 ```
 
 ## `config` files
@@ -102,9 +102,11 @@ $("#click-me").click(function() {
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "webpack": "webpack --progress --colors",
-    "build": "npm run webpack",
-    "start": "npm run webpack"
+    "webpack-dev": "webpack --progress --colors -d",
+    "webpack-prod": "webpack --progress --colors -p",
+    "webpack-dev-details": "webpack --progress --colors --display-reasons --display-chunks --display-modules",
+    "build": "npm run webpack-prod",
+    "start": "npm run webpack-dev"
   },
   "author": "",
   "license": "ISC",
@@ -112,9 +114,13 @@ $("#click-me").click(function() {
     "jquery": "^2.1.4"
   },
   "devDependencies": {
-    "webpack": "^1.12.9"
+    "webpack": "^1.12.9",
+    "babel-core": "^6.3.17",
+    "babel-loader": "^6.2.0",
+    "babel-preset-es2015": "^6.3.13"
   }
 }
+
 ```
 
 
@@ -134,8 +140,20 @@ module.exports = {
     publicPath: "dist/js/",
     filename: "[name].bundle.js"
   },
+  module: {
+    loaders: [
+      {
+        test: /\.js$/,
+        exclude: /node_modules/,
+        loader: 'babel',
+        query: {
+          presets: ['es2015']
+        }
+      }
+    ]
+  },
   plugins: [
-    new webpack.optimize.CommonsChunkPlugin('common.js')
+    new webpack.optimize.CommonsChunkPlugin('commons.js')
   ]
 }
 ```
@@ -213,7 +231,7 @@ module.exports = {
 /******/  // "0" means "already loaded"
 /******/  // Array means "loading", array contains callbacks
 /******/  var installedChunks = {
-/******/    3:0
+/******/    4:0
 /******/  };
 
 /******/  // The require function
@@ -279,7 +297,14 @@ module.exports = {
 /* 1 */
 /***/ function(module, exports) {
 
-  module.exports = "Helper";
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  /* helpers.js */
+  var helper = "Helper";
+  exports.default = helper;
 
 /***/ },
 /* 2 */
@@ -318,11 +343,21 @@ webpackJsonp([0],[
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-  var common = __webpack_require__(1);
-  var $ = __webpack_require__(2);
+  "use strict";
 
-  __webpack_require__.e/* require */(1, function(__webpack_require__) { var __WEBPACK_AMD_REQUIRE_ARRAY__ = [__webpack_require__(3)]; (function(shared) {
-    shared("This is page A");
+  var _helpers = __webpack_require__(1);
+
+  var _helpers2 = _interopRequireDefault(_helpers);
+
+  var _jquery = __webpack_require__(2);
+
+  var _jquery2 = _interopRequireDefault(_jquery);
+
+  function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+  // async loading. require only get objects (is also a good practice always return objects)
+  __webpack_require__.e/* require */(1, function(__webpack_require__) { var __WEBPACK_AMD_REQUIRE_ARRAY__ = [__webpack_require__(3)]; (function (shared) {
+    shared.log(shared.common + "...you've just clicked!!");
   }.apply(null, __WEBPACK_AMD_REQUIRE_ARRAY__));});
 
 /***/ }
@@ -336,22 +371,31 @@ webpackJsonp([2],[
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-  var common = __webpack_require__(1);
-  var $ = __webpack_require__(2);
+  "use strict";
 
-  $("#click-me").click(function() {
+  var _helpers = __webpack_require__(1);
 
-    __webpack_require__.e/* nsure */(1/* duplicate */, function(require) {
-      var shared = __webpack_require__(3);
-      shared("You've just clicked!!");
-    });
+  var _helpers2 = _interopRequireDefault(_helpers);
 
-    __webpack_require__.e/* nsure */(3, function(require) {
-      var asyncLog = __webpack_require__(4);
-      asyncLog("Yes you did!!");
-    });
-  })
+  var _jquery = __webpack_require__(2);
 
+  var _jquery2 = _interopRequireDefault(_jquery);
+
+  function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+  (0, _jquery2.default)("#click-me").click(function () {
+
+    // already loaded by pageA.js??
+    __webpack_require__.e/* require */(1/* duplicate */, function(__webpack_require__) { var __WEBPACK_AMD_REQUIRE_ARRAY__ = [__webpack_require__(3)]; (function (shared) {
+      shared.log(shared.common + "...you've just clicked!!");
+    }.apply(null, __WEBPACK_AMD_REQUIRE_ARRAY__));});
+
+    // will be loaded on-demand (when clicking)
+    __webpack_require__.e/* require */(3, function(__webpack_require__) { var __WEBPACK_AMD_REQUIRE_ARRAY__ = [__webpack_require__(4)]; (function (onDemand) {
+      onDemand.log("Yes you did!!");
+      onDemand.log(_helpers2.default);
+    }.apply(null, __WEBPACK_AMD_REQUIRE_ARRAY__));});
+  });
 
 /***/ }
 ]);
@@ -365,11 +409,28 @@ webpackJsonp([1],{
 /***/ 3:
 /***/ function(module, exports, __webpack_require__) {
 
-  /* shared */
-  var common = __webpack_require__(1);
-  module.exports = function(msg) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.common = exports.log = undefined;
+
+  var _helpers = __webpack_require__(1);
+
+  var _helpers2 = _interopRequireDefault(_helpers);
+
+  function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+  /* on-demand something */
+  function log(msg) {
     console.log(msg);
-  };
+  } /* shared */
+  ;
+
+  // var common = require("./helpers");
+  exports.log = log;
+  exports.common = _helpers2.default;
 
 /***/ }
 
@@ -384,10 +445,18 @@ webpackJsonp([3],{
 /***/ 4:
 /***/ function(module, exports) {
 
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
   /* on-demand something */
-  module.exports = function(msg) {
+  function log(msg) {
     console.log(msg);
   };
+
+  // var common = require("./helpers");
+  exports.log = log;
 
 /***/ }
 
@@ -403,35 +472,34 @@ $ npm run webpack-dev-details
 > webpack-multiple-entry-points@1.0.0 webpack-dev-details /Users/juanma/www/webpack-multiple-entry-points
 > webpack --progress --colors --display-reasons --display-chunks --display-modules
 
-Hash: d88c9000534b85e4f169  
+Hash: 81c66a85d898dddc5e4d  
 Version: webpack 1.12.9
-Time: 541ms
+Time: 8299ms
           Asset       Size  Chunks             Chunk Names
-pageA.bundle.js  399 bytes       0  [emitted]  pageA
-  1.1.bundle.js  208 bytes       1  [emitted]  
-pageB.bundle.js  594 bytes       2  [emitted]  pageB
-  3.3.bundle.js  163 bytes       3  [emitted]  
+pageA.bundle.js  748 bytes       0  [emitted]  pageA
+  1.1.bundle.js  602 bytes       1  [emitted]  
+pageB.bundle.js    1.11 kB       2  [emitted]  pageB
+  3.3.bundle.js  294 bytes       3  [emitted]  
      commons.js     259 kB       4  [emitted]  commons.js
-chunk    {0} pageA.bundle.js (pageA) 153 bytes {4} [rendered]
-    [0] ./src/js/pageA.js 153 bytes {0} [built]
-chunk    {1} 1.1.bundle.js 102 bytes {0} {2} [rendered]
-    [3] ./src/js/shared.js 102 bytes {1} [built]
-        amd require ./shared [0] ./src/js/pageA.js 4:0-6:2
-        cjs require ./shared [0] ./src/js/pageB.js 8:17-36
-chunk    {2} pageB.bundle.js (pageB) 472 bytes {4} [rendered]
-    [0] ./src/js/pageB.js 472 bytes {2} [built]
-chunk    {3} 3.3.bundle.js 81 bytes {2} [rendered]
-    [4] ./src/js/on-demand-something.js 81 bytes {3} [built]
-        cjs require ./on-demand-something [0] ./src/js/pageB.js 14:19-51
+chunk    {0} pageA.bundle.js (pageA) 500 bytes {4} [rendered]
+    [0] ./src/js/pageA.js 500 bytes {0} [built]
+chunk    {1} 1.1.bundle.js 488 bytes {0} {2} [rendered]
+    [3] ./src/js/shared.js 488 bytes {1} [built]
+        amd require ./shared [0] ./src/js/pageA.js 14:0-16:2
+        amd require ./shared [0] ./src/js/pageB.js 16:2-18:4
+chunk    {2} pageB.bundle.js (pageB) 693 bytes {4} [rendered]
+    [0] ./src/js/pageB.js 693 bytes {2} [built]
+chunk    {3} 3.3.bundle.js 206 bytes {2} [rendered]
+    [4] ./src/js/on-demand-something.js 206 bytes {3} [built]
+        amd require ./on-demand-something [0] ./src/js/pageB.js 21:2-24:4
 chunk    {4} commons.js (commons.js) 248 kB [rendered]
-    [1] ./src/js/helpers.js 43 bytes {4} [built]
-        cjs require ./helpers [0] ./src/js/pageA.js 1:13-33
-        cjs require ./helpers [0] ./src/js/pageB.js 1:13-33
-        cjs require ./helpers [3] ./src/js/shared.js 2:13-33
+    [1] ./src/js/helpers.js 145 bytes {4} [built]
+        cjs require ./helpers.js [0] ./src/js/pageA.js 3:15-38
+        cjs require ./helpers.js [0] ./src/js/pageB.js 3:15-38
+        cjs require ./helpers.js [3] ./src/js/shared.js 8:15-38
     [2] ./~/jquery/dist/jquery.js 248 kB {4} [built]
-        cjs require ../../node_modules/jquery [0] ./src/js/pageA.js 2:8-44
-        cjs require ../../node_modules/jquery [0] ./src/js/pageB.js 2:8-44
-
+        cjs require ../../node_modules/jquery [0] ./src/js/pageA.js 7:14-50
+        cjs require ../../node_modules/jquery [0] ./src/js/pageB.js 7:14-50
 ```
 
 Notice the `amd require` (AMD require) and `cjs require` (CommonJs require) indicating different types of modules co-existing
@@ -444,36 +512,26 @@ $ npm run webpack-prod
 > webpack-multiple-entry-points@1.0.0 webpack-prod /Users/juanma/www/webpack-multiple-entry-points
 > webpack --progress --colors -p
 
-Hash: e79d6d9f70f38070f587  
+Hash: 72b7f523425f8266b817  
 Version: webpack 1.12.9
-Time: 2991ms
+Time: 10796ms
           Asset       Size  Chunks             Chunk Names
-  0.0.bundle.js   82 bytes       0  [emitted]  
-     commons.js    86.2 kB       1  [emitted]  commons.js
-  2.2.bundle.js   75 bytes       2  [emitted]  
-pageB.bundle.js  197 bytes       3  [emitted]  pageB
-pageA.bundle.js  129 bytes       4  [emitted]  pageA
-   [0] ./src/js/pageA.js 153 bytes {4} [built]
-   [0] ./src/js/pageB.js 472 bytes {3} [built]
-   [1] ./src/js/helpers.js 43 bytes {1} [built]
-   [3] ./src/js/shared.js 102 bytes {0} [built]
-   [4] ./src/js/on-demand-something.js 81 bytes {2} [built]
-    + 1 hidden modules
-
-WARNING in 0.0.bundle.js from UglifyJs
-Side effects in initialization of unused variable common [./src/js/shared.js:2,0]
+  0.0.bundle.js  253 bytes       0  [emitted]  
+     commons.js    86.3 kB       1  [emitted]  commons.js
+  2.2.bundle.js  136 bytes       2  [emitted]  
+pageB.bundle.js  394 bytes       3  [emitted]  pageB
+pageA.bundle.js  238 bytes       4  [emitted]  pageA
+    + 6 hidden modules
 
 WARNING in commons.js from UglifyJs
 Condition always true [./~/jquery/dist/jquery.js:9170,0]
-
-WARNING in pageB.bundle.js from UglifyJs
-Side effects in initialization of unused variable common [./src/js/pageB.js:1,0]
-
-WARNING in pageA.bundle.js from UglifyJs
-Side effects in initialization of unused variable common [./src/js/pageA.js:1,0]
-Side effects in initialization of unused variable $ [./src/js/pageA.js:2,0]
 ```
 
 ## Resources 
 
 - http://www.slideshare.net/ittalk/webpack
+- https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import
+- https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/export
+- https://hacks.mozilla.org/2015/08/es6-in-depth-modules/
+- http://exploringjs.com/es6/ch_modules.html
+- 

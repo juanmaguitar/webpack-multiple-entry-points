@@ -1,6 +1,7 @@
-var common = require("./helpers");
-var $ = require('../../node_modules/jquery');
+import common from "./helpers.js";
+import $ from '../../node_modules/jquery';
 
+// async loading. require only get objects (is also a good practice always return objects)
 require(["./shared"], function(shared) {
-	shared("This is page A");
+  shared.log(shared.common + "...you've just clicked!!");
 });

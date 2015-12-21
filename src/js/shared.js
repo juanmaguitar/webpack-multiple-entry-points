@@ -1,5 +1,10 @@
 /* shared */
-var common = require("./helpers");
-module.exports = function(msg) {
-	console.log(msg);
+import common from "./helpers.js";
+
+/* on-demand something */
+function log(msg) {
+  console.log(msg);
 };
+
+// var common = require("./helpers");
+export { log, common };

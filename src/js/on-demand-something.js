@@ -1,4 +1,7 @@
 /* on-demand something */
-module.exports = function(msg) {
+function log(msg) {
   console.log(msg);
 };
+
+// var common = require("./helpers");
+export { log };

@@ -1,2 +1,3 @@
 /* helpers.js */
-module.exports = "Helper";
+var helper = "Helper"
+export { helper as default };
