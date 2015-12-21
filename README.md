@@ -2,17 +2,25 @@
 
 ## Install
 
-Install dependencies and create the bundles by doing
+First of all you must install dependencies
 
-`npm install && npm start`
+`npm install`
+
+and then create you can create the bundles by doing
+
+`npm start`
 
 Then you can open `pageA.html` or `pageAB.html` and check how the js files have been created properly and how webpack is also managing the async loading
 
-## Original Description 
 
-This example shows how to use multiple entry points with a commons chunk.
+## Description 
 
-In this example you have two (HTML) pages `pageA` and `pageB`. You want to create individual bundles for each page. In addition to this you want to create a shared bundle that contains all modules used in both pages (assuming there are many/big modules in common). The pages also use Code Splitting to load a less used part of the features on demand.
+This example shows:
+- how to use multiple entry points
+- how to create a common chunk w/ shared dependencies
+- how to do async loading and let webpack handle it
+
+In this example you have two (HTML) pages `pageA` and `pageAB`. You want to create individual bundles for each page. In addition to this you want to create a shared bundle that contains all modules used in both pages (assuming there are many/big modules in common). The pages also use Code Splitting to load a less used part of the features on demand (async loading).
 
 You can see how to define multiple entry points via the `entry` option and the required changes (`[name]`) in the `output` option. You can also see how to use the CommonsChunkPlugin.
 
@@ -21,11 +29,14 @@ You can see the output files:
 * `commons.js` contains:
   * the module system
   * chunk loading logic
-  * module `common.js` which is used in both pages
-* `pageA.bundle.js` contains: (`pageB.bundle.js` is similar)
+  * module `helpers.js` and `jQuery` which is used in both pages
+* `pageA.bundle.js` contains:
   * the entry point `pageA.js`
   * it would contain any other module that is only used by `pageA`
-* `0.chunk.js` is an additional chunk which is used by both pages. It contains:
+* `pageA.bundle.js` contains:
+  * the entry point `pageB.js`
+  * it would contain any other module that is only used by `pageB`
+* `1.1.bundle` is an additional chunk which is used by both pages. It contains:
   * module `shared.js`
 
 You can also see the info that is printed to console. It shows among others:
@@ -38,50 +49,111 @@ You can also see the info that is printed to console. It shows among others:
 * the reasons why a chunk is created
   * see lines starting with `>`
 
-# pageA.js
+### `pageA.js`
 
 ``` javascript
-{{src/js/pageA.js}}
+var common = require("./helpers");
+var $ = require('../../node_modules/jquery');
+
+require(["./shared"], function(shared) {
+  shared("This is page A");
+});
 ```
 
-# pageB.js
+### `pageB.js`
 
 ``` javascript
-{{src/js/pageB.js}}
+var common = require("./helpers");
+var $ = require('../../node_modules/jquery');
+
+require.ensure([ /* "./shared" */ ], function(require) {
+  var shared = require("./shared");
+  shared("This is page B");
+});
 ```
 
-# webpack.config.js
+### `package.json`
 
 ``` javascript
-var path = require("path");
-var CommonsChunkPlugin = require("../../lib/optimize/CommonsChunkPlugin");
-module.exports = {
-	entry: {
-		pageA: "./pageA",
-		pageB: "./pageB"
-	},
-	output: {
-		path: path.join(__dirname, "js"),
-		filename: "[name].bundle.js",
-		chunkFilename: "[id].chunk.js"
-	},
-	plugins: [
-		new CommonsChunkPlugin("commons.js")
-	]
+{
+  "name": "webpack-multiple-entry-points",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "webpack": "webpack --progress --colors",
+    "build": "npm run webpack",
+    "start": "npm run webpack"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "jquery": "^2.1.4"
+  },
+  "devDependencies": {
+    "webpack": "^1.12.9"
+  }
 }
 ```
 
-# pageA.html
+
+### `webpack.config.js`
+
+``` javascript
+var path = require("path");
+var webpack = require("webpack");
+
+module.exports = {
+  entry: {
+    pageA: "./src/js/pageA",
+    pageB: "./src/js/pageB"
+  },
+  output: {
+    path: path.join(__dirname, "dist/js"),
+    publicPath: "dist/js/",
+    filename: "[name].bundle.js"
+  },
+  plugins: [
+    new webpack.optimize.CommonsChunkPlugin('common.js')
+  ]
+}
+```
+
+### `pageA.html`
 
 ``` html
 <html>
-	<head></head>
-	<body>
-		<script src="js/commons.js" charset="utf-8"></script>
-		<script src="js/pageA.bundle.js" charset="utf-8"></script>
-	</body>
+  <head></head>
+  <body>
+    <!-- html content -->
+    <p><a href="pageAB.html">go to pageAB >>>>>>>> </a></p>
+
+    <!-- scripts -->
+    <script src="dist/js/commons.js" charset="utf-8"></script>
+    <script src="dist/js/pageA.bundle.js" charset="utf-8"></script>
+  </body>
 </html>
 ```
+
+### `pageAB.html
+
+``` html
+<html>
+  <head></head>
+  <body>
+    <!-- html content -->
+    <button id="click-me">click me to load js file</button>
+    <p><a href="pageA.html"> <<<<<<<<<<<< go to pageA</a></p>
+
+    <!-- scripts -->
+    <script src="dist/js/commons.js" charset="utf-8"></script>
+    <script src="dist/js/pageA.bundle.js" charset="utf-8"></script>
+    <script src="dist/js/pageB.bundle.js" charset="utf-8"></script>
+  </body>
+</html>
+```
+
 
 # js/commons.js
 
