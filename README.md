@@ -12,7 +12,7 @@ With Commonjs modules
 
 With ES2015 modules `master`
 
-`git checkout commonjs`
+`git checkout es2015`
 
 ## Install
 
