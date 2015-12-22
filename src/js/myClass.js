@@ -6,6 +6,9 @@ export class Point {
     toString() {
         return '(' + this.x + ', ' + this.y + ')';
     }
+    static classMethod() {
+        return 'hello';
+    }
 }
 
 export class ColorPoint extends Point {
