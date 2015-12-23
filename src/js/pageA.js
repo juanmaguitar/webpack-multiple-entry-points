@@ -1,6 +1,6 @@
 import common from "./helpers.js";
 import $ from '../../node_modules/jquery';
-import { Point, ColorPoint, VersionedArray } from "./myClasses.js";
+import { Point, ColorPoint } from "./myClasses.js";
 
 var color = new ColorPoint(5,6,"blue");
 console.log ( color.toString() )
